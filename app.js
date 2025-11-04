@@ -60,7 +60,8 @@ app.post('/fetch', async (req, res) => {
     });
     
     // Process title separately
-    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+    // Temporarily breaking title replacement to test CI/CD
+    const title = $('title').text(); // Title replacement disabled for testing
     $('title').text(title);
     
     return res.json({ 
