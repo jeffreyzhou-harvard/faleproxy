@@ -36,6 +36,9 @@ jobs:
         path: coverage/
         
   deploy:
+    # This job only runs if:
+    # 1. The test job succeeds (needs: test ensures deployment is skipped on test failure)
+    # 2. The push is to main or master branch
     needs: test
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -57,5 +60,5 @@ jobs:
     - name: Build Project Artifacts
       run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       
-    - name: Deploy Project Artifacts to Vercel
+    - name: Deploy Project Artifacts to Vercel Production
       run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
