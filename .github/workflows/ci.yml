@@ -36,11 +36,12 @@ jobs:
         path: coverage/
         
   deploy:
-    # This job only runs if:
-    # 1. The test job succeeds (needs: test ensures deployment is skipped on test failure)
-    # 2. The push is to main or master branch
+    # CRITICAL: This job only runs if ALL tests pass
+    # - needs: test ensures deployment is SKIPPED if test job fails
+    # - If tests fail, this deploy job will NOT run at all
+    # - Only deploys to production when tests pass AND on main/master branch
     needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
     runs-on: ubuntu-latest
     
     steps:
