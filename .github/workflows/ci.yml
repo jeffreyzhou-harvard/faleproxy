@@ -32,12 +32,16 @@ jobs:
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: coverage-report-node-${{ matrix.node-version }}
         path: coverage/
         
   deploy:
+    # CRITICAL: This job only runs if ALL tests pass
+    # - needs: test ensures deployment is SKIPPED if test job fails
+    # - If tests fail, this deploy job will NOT run at all
+    # - Only deploys to production when tests pass AND on main/master branch
     needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
     runs-on: ubuntu-latest
     
     steps:
@@ -57,5 +61,5 @@ jobs:
     - name: Build Project Artifacts
       run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       
-    - name: Deploy Project Artifacts to Vercel
+    - name: Deploy Project Artifacts to Vercel Production
       run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
